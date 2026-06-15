@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-const NAV_LINKS = ["about", "stack", "projects", "contact"];
+const NAV_LINKS = ["about", "stack", "projects", "personas", "contact"];
 
 const STACK = [
   { category: "Frontend", items: ["React", "Next.js", "TypeScript", "Tailwind CSS"] },
@@ -33,6 +33,57 @@ const PROJECTS = [
     desc: "Projeto experimental em Python explorando automação e scripts utilitários.",
     tech: ["Python", "Automation"],
     url: "https://github.com/arthvin/projeto-python",
+  },
+];
+
+const PERSONAS = [
+  {
+    id: "frontend",
+    label: "UI Engineer",
+    avatar: "◈",
+    color: "#22d3ee",
+    colorDim: "rgba(34,211,238,0.08)",
+    border: "rgba(34,211,238,0.3)",
+    tagline: "Interfaces que fazem sentido.",
+    bio: "Obcecado com micro-interações, acessibilidade e performance percebida. Se o botão não tem o timing certo no hover, não está pronto.",
+    traits: [
+      { label: "Stack", value: "React · TypeScript · Tailwind" },
+      { label: "Foco", value: "UX/UI · Animações · Design System" },
+      { label: "Ferramenta fav.", value: "Figma + devtools abertos" },
+      { label: "Filosofia", value: "\"Less, but better.\"" },
+    ],
+  },
+  {
+    id: "backend",
+    label: "Backend Dev",
+    avatar: "⬡",
+    color: "#818cf8",
+    colorDim: "rgba(129,140,248,0.08)",
+    border: "rgba(129,140,248,0.3)",
+    tagline: "Sistemas que aguentam o tranco.",
+    bio: "APIs bem estruturadas, filas, cache e zero downtime. Gosto de resolver gargalos antes que virem problema.",
+    traits: [
+      { label: "Stack", value: "NestJS · Node.js · PostgreSQL" },
+      { label: "Foco", value: "Escalabilidade · WebSockets · Auth" },
+      { label: "Ferramenta fav.", value: "Insomnia + logs no terminal" },
+      { label: "Filosofia", value: "\"Fail fast, recover faster.\"" },
+    ],
+  },
+  {
+    id: "fullstack",
+    label: "Full Stack",
+    avatar: "◎",
+    color: "#34d399",
+    colorDim: "rgba(52,211,153,0.08)",
+    border: "rgba(52,211,153,0.3)",
+    tagline: "Do banco ao browser.",
+    bio: "Transito entre camadas sem perder contexto. Entrego features de ponta a ponta e entendo o custo de cada decisão no stack inteiro.",
+    traits: [
+      { label: "Stack", value: "React · NestJS · Docker · Redis" },
+      { label: "Foco", value: "Entrega completa · Integração" },
+      { label: "Ferramenta fav.", value: "Monorepo + CI/CD pipeline" },
+      { label: "Filosofia", value: "\"Ship it, then improve it.\"" },
+    ],
   },
 ];
 
@@ -74,22 +125,24 @@ function Cursor() {
     window.addEventListener("mousemove", move);
     window.addEventListener("mouseover", over);
     window.addEventListener("mouseout", out);
-    return () => { window.removeEventListener("mousemove", move); window.removeEventListener("mouseover", over); window.removeEventListener("mouseout", out); };
+    return () => {
+      window.removeEventListener("mousemove", move);
+      window.removeEventListener("mouseover", over);
+      window.removeEventListener("mouseout", out);
+    };
   }, []);
   return (
-    <>
-      <div
-        className="pointer-events-none fixed z-[9999] rounded-full mix-blend-difference"
-        style={{
-          width: hovering ? 40 : 8,
-          height: hovering ? 40 : 8,
-          background: "#e2e8f0",
-          top: pos.y - (hovering ? 20 : 4),
-          left: pos.x - (hovering ? 20 : 4),
-          transition: "width 0.2s, height 0.2s, top 0.05s linear, left 0.05s linear",
-        }}
-      />
-    </>
+    <div
+      className="pointer-events-none fixed z-[9999] rounded-full mix-blend-difference"
+      style={{
+        width: hovering ? 40 : 8,
+        height: hovering ? 40 : 8,
+        background: "#e2e8f0",
+        top: pos.y - (hovering ? 20 : 4),
+        left: pos.x - (hovering ? 20 : 4),
+        transition: "width 0.2s, height 0.2s, top 0.05s linear, left 0.05s linear",
+      }}
+    />
   );
 }
 
@@ -99,10 +152,114 @@ function GridBg() {
       className="pointer-events-none fixed inset-0 z-0"
       style={{
         backgroundImage:
-          "linear-gradient(rgba(148,163,184,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.05) 1px, transparent 1px)",
+          "linear-gradient(rgba(148,163,184,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.04) 1px, transparent 1px)",
         backgroundSize: "48px 48px",
       }}
     />
+  );
+}
+
+function PersonaCard({ persona, active, onClick }) {
+  return (
+    <button
+      data-hover
+      onClick={onClick}
+      style={{
+        borderColor: active ? persona.border : "rgba(51,65,85,0.6)",
+        background: active ? persona.colorDim : "transparent",
+        transition: "all 0.3s ease",
+      }}
+      className="w-full text-left p-5 border rounded-none flex items-center gap-4 group"
+    >
+      <span
+        className="text-2xl shrink-0 w-10 h-10 flex items-center justify-center border"
+        style={{
+          color: active ? persona.color : "#475569",
+          borderColor: active ? persona.border : "rgba(51,65,85,0.5)",
+          background: active ? persona.colorDim : "transparent",
+          transition: "all 0.3s",
+        }}
+      >
+        {persona.avatar}
+      </span>
+      <div>
+        <p
+          className="text-xs tracking-widest uppercase font-semibold"
+          style={{ color: active ? persona.color : "#64748b", transition: "color 0.3s" }}
+        >
+          {persona.label}
+        </p>
+        <p className="text-[11px] text-slate-600 mt-0.5">{persona.tagline}</p>
+      </div>
+    </button>
+  );
+}
+
+function PersonasSection() {
+  const [active, setActive] = useState(0);
+  const p = PERSONAS[active];
+
+  return (
+    <section id="personas" className="relative py-28 border-t border-slate-800/40">
+      <div className="max-w-5xl mx-auto px-6">
+        <FadeIn>
+          <div className="mb-16">
+            <p className="text-cyan-500 text-xs tracking-[0.3em] uppercase mb-3">04 — Modos</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-100">Qual versão você precisa?</h2>
+          </div>
+        </FadeIn>
+
+        <FadeIn delay={0.1}>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-slate-800/30 mb-px">
+            {PERSONAS.map((persona, i) => (
+              <PersonaCard
+                key={persona.id}
+                persona={persona}
+                active={active === i}
+                onClick={() => setActive(i)}
+              />
+            ))}
+          </div>
+
+          {/* Detail Panel */}
+          <div
+            className="border border-t-0 p-8 md:p-10"
+            style={{
+              borderColor: p.border,
+              background: p.colorDim,
+              transition: "all 0.4s ease",
+            }}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+              <div>
+                <div className="flex items-center gap-3 mb-5">
+                  <span className="text-3xl" style={{ color: p.color }}>{p.avatar}</span>
+                  <span
+                    className="text-xs tracking-[0.3em] uppercase font-semibold"
+                    style={{ color: p.color }}
+                  >
+                    {p.label}
+                  </span>
+                </div>
+                <p className="text-slate-300 text-sm leading-relaxed">{p.bio}</p>
+              </div>
+
+              <div className="flex flex-col gap-4">
+                {p.traits.map((t) => (
+                  <div key={t.label} className="flex flex-col gap-0.5">
+                    <span className="text-[10px] tracking-[0.25em] uppercase" style={{ color: p.color, opacity: 0.7 }}>
+                      {t.label}
+                    </span>
+                    <span className="text-slate-300 text-sm">{t.value}</span>
+                    <div className="h-px bg-slate-800/60 mt-2" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </FadeIn>
+      </div>
+    </section>
   );
 }
 
@@ -131,8 +288,16 @@ export default function App() {
       <Cursor />
       <GridBg />
 
-      {/* NAV */}
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-slate-800/60 bg-[#080c10]/80 backdrop-blur-md">
+      {/* NAV — transparent glass */}
+      <nav
+        className="fixed top-0 left-0 right-0 z-50"
+        style={{
+          background: "rgba(8,12,16,0.55)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
+          borderBottom: "1px solid rgba(148,163,184,0.06)",
+        }}
+      >
         <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
           <button
             onClick={() => scrollTo("about")}
@@ -141,13 +306,15 @@ export default function App() {
             arthvin<span className="text-cyan-500">.</span>
           </button>
 
-          {/* desktop */}
           <div className="hidden md:flex items-center gap-8">
             {NAV_LINKS.map((l) => (
               <button
                 key={l}
                 onClick={() => scrollTo(l)}
-                className={`text-xs tracking-widest uppercase transition-colors ${activeSection === l ? "text-cyan-400" : "text-slate-500 hover:text-slate-200"}`}
+                className="text-xs tracking-widest uppercase transition-colors"
+                style={{ color: activeSection === l ? "#22d3ee" : "#475569" }}
+                onMouseEnter={e => { if (activeSection !== l) e.target.style.color = "#cbd5e1"; }}
+                onMouseLeave={e => { if (activeSection !== l) e.target.style.color = "#475569"; }}
               >
                 {l}
               </button>
@@ -175,7 +342,13 @@ export default function App() {
         </div>
 
         {menuOpen && (
-          <div className="md:hidden border-t border-slate-800/60 bg-[#080c10] px-6 py-4 flex flex-col gap-4">
+          <div
+            className="md:hidden px-6 py-4 flex flex-col gap-4"
+            style={{
+              background: "rgba(8,12,16,0.85)",
+              borderTop: "1px solid rgba(148,163,184,0.06)",
+            }}
+          >
             {NAV_LINKS.map((l) => (
               <button key={l} onClick={() => scrollTo(l)} className="text-xs tracking-widest uppercase text-left text-slate-400 hover:text-cyan-400 transition-colors">
                 {l}
@@ -221,7 +394,6 @@ export default function App() {
             </button>
           </div>
 
-          {/* scroll indicator */}
           <div className="absolute bottom-10 left-6 flex flex-col items-center gap-2">
             <div className="w-px h-12 bg-gradient-to-b from-transparent to-cyan-500/60" />
             <span className="text-[10px] tracking-[0.3em] text-slate-600 uppercase rotate-90 origin-center mt-8">scroll</span>
@@ -309,19 +481,22 @@ export default function App() {
                 data-hover
                 className="inline-block text-xs tracking-widest uppercase text-slate-500 hover:text-cyan-400 transition-colors border-b border-slate-700 hover:border-cyan-500/50 pb-0.5"
               >
-                Ver todos os 34 repositórios ↗
+                Ver todos os repositórios ↗
               </a>
             </div>
           </FadeIn>
         </div>
       </section>
 
+      {/* PERSONAS */}
+      <PersonasSection />
+
       {/* CONTACT */}
       <section id="contact" className="relative py-28 border-t border-slate-800/40">
         <div className="max-w-5xl mx-auto px-6">
           <FadeIn>
             <div className="mb-4">
-              <p className="text-cyan-500 text-xs tracking-[0.3em] uppercase mb-3">04 — Contato</p>
+              <p className="text-cyan-500 text-xs tracking-[0.3em] uppercase mb-3">05 — Contato</p>
             </div>
           </FadeIn>
 
